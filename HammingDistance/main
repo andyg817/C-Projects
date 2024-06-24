@@ -1,0 +1,111 @@
+// Copyright 2021 Andrew Garcia
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+
+using std::vector;
+using std::cout;
+using std::string;
+
+void readData(vector<string> &data, string filename);
+void printData(const vector<string> &data);
+vector<int> findMinHamming(const vector<string> & data, string test);
+void printMinDistance(const vector<string> &data, string word,
+                      const vector<int> min);
+
+int main(int argc, char **argv) {
+  string filename;
+  vector<string> data;
+  if (argc != 2) {
+    cout << "Usage: ./sub1 data.txt\n";
+    exit(0);
+  }
+  filename = argv[1];
+  readData(data, filename);
+  printData(data);
+  for (auto line : data) {
+    vector<int> ret;
+    ret = findMinHamming(data, line);
+    printMinDistance(data, line, ret);
+  }
+  return 0;
+}
+
+void readData(vector<string> &data, string filename) {
+  std::ifstream in(filename);
+  if (in.is_open()) {
+    string line;
+    while (std::getline(in, line)) {
+      data.push_back(line);
+    }
+  }
+  in.close();
+  return;
+}
+
+void printData(const vector<string> &data) {
+  for (int i = 0; i < data.size(); i++) {
+    cout << data[i] << "\n";
+  }
+  return;
+}
+
+vector<int> findMinHamming(const vector<string> & data, string test) {
+  vector<int> ret;
+  int sizeT = test.length();
+  string dataT = new char[sizeT];
+  for (int i = 0; i < sizeT; i++) {
+    dataT[i] = test.at(i);
+  }
+  int count[data.size()];
+  for (int i = 0; i < data.size(); i++) {
+    string str = data[i];
+    int sizeW = str.length();
+    string dataW = new char[sizeW];
+    for (int j = 0; j < sizeW; j++) {
+      dataW[j] = str.at(j);
+    }
+    
+    count[i] = 0;
+    if (sizeW < sizeT) {
+      for (int k = 0; k < sizeT; k++) {
+        if (dataW[k] != dataT[k]) {
+          count[i]++;
+        }
+      }
+    } else {
+      for (int k = 0; k < sizeW; k++) {
+        if (dataW[k] != dataT[k]) {
+          count[i]++;
+        }
+      }
+    }
+  }
+
+  int num = 0;
+  if (count[0] == 0) {
+    int min = count[1];
+    for (int i = 2; i < 6; i++) {
+      if(count[i] < min && count[i] > 0) {
+        min = count[i];
+        num++;
+      }
+    }
+  } else {
+    int min = count[0];
+    for (int i = 1; i < 6; i++) {
+      if(count[i] < min && count[i] > 0) {
+        min = count[i];
+        num++;
+      }
+    }
+  }
+  return ret;
+}
+
+void printMinDistance(const vector<string> &data, string word,
+                      const vector<int> min) {
+  cout << "The minimum hamming distance for " << word << " is " << min[1] << " (matching word: " << data[min[0]] << ")" << "\n";
+  return;
+}
